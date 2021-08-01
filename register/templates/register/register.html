@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+
+    Tworzenie konta
+
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+    <div class="container">
+
+        <div class="row justify-content-center ">
+
+            <form method="POST" class="form-group col-lg-6 col-10 mt-4 p-4 border border-light">
+
+                <h2 class="text-center">Stwórz nowe konto</h2>
+
+                {% csrf_token %}
+                {{form|crispy}}
+                <div class="mt-4">
+
+                    <a href="../login" class="text-decoration-none">
+                        <i class="bi bi-arrow-left"></i>
+                        Wróć do panelu logowania
+                    </a>
+
+                </div>
+
+                <button type="submit" class="btn btn-success mt-4">Stwórz</button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+{% endblock %}

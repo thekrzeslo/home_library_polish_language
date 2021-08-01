@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+    Panel logowania
+
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <form method="POST" class="form-group col-lg-4 col-10 mt-5 p-lg-5 p-3 border border-light">
+
+                <h2 class="text-center">Zaloguj się</h2>
+
+                {% csrf_token %}
+                {{form|crispy}}
+                <p class="py-4">Nie masz konta? Stwórz je <a class="text-decoration-none" href="/register">tutaj</a></p>
+
+                <button type="submit" class="btn btn-success">Zaloguj</button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+{% endblock %}
