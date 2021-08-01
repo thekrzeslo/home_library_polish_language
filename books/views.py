@@ -3,15 +3,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Books
 from .forms import BooksForm
 from django.views import View
-
-
-from requests_html import requests
-
 from bs4 import BeautifulSoup
 import requests
 from requests_html import HTMLSession
-
-
 import openpyxl
 
 
@@ -39,15 +33,16 @@ def parse_results(response):
     results = response.html.find(css_identifier_result)
 
     for i in results:
-        try:
-            output = i.find(css_identifier_description, first=True).text
+        find_div = i.find(css_identifier_description, first=True)
+
+        if find_div:
+            output = find_div.text
             break
-        except:
-            continue
     else:
         output = ""
 
     return output
+
 
 def google_search(query):
     response = get_results(query)
@@ -59,25 +54,26 @@ def save_as_lxml(queryset):
     sheet = workbook.active
     sheet["A1"] = "Tytuł"
     sheet["B1"] = "Autor"
-    sheet["C1"] = "Gatunek"
+    sheet["C1"] = "Opis"
+    sheet["D1"] = "Gatunek"
 
     sheet_title_num = 2
     sheet_author_num = 2
+    sheet_description_num = 2
     sheet_type_num = 2
 
     for i in queryset:
 
         sheet["A" + str(sheet_title_num)] = i.title
         sheet["B" + str(sheet_author_num)] = i.author
-        sheet["C" + str(sheet_type_num)] = i.type
+        sheet["C" + str(sheet_description_num)] = i.description
+        sheet["D" + str(sheet_type_num)] = i.type
         sheet_title_num += 1
         sheet_author_num += 1
+        sheet_description_num += 1
         sheet_type_num += 1
 
-
     workbook.save("static/data/books_data.xlsx")
-
-
 
 
 class BookListView(View):
@@ -102,7 +98,6 @@ class BookListView(View):
         for k, v in temp.items():
             if v:
                 filtr[k + "__contains"] = v
-
 
         if filtr:
             self.queryset = Books.objects.filter(**filtr)
@@ -146,7 +141,6 @@ class BookListView(View):
                 form.save()
                 self.queryset = Books.objects.filter(**filtr)
 
-
             save_as_lxml(self.queryset)
 
 
@@ -173,8 +167,9 @@ class BookListView(View):
 
                 soup = BeautifulSoup(html_text, 'html.parser')
 
-                try:
-                    book = soup.find("div", class_="authorAllBooks__single")
+                book = soup.find("div", class_="authorAllBooks__single")
+
+                if book:
 
                     a = book.find("a", class_="authorAllBooks__singleTextTitle float-left")
 
@@ -192,7 +187,7 @@ class BookListView(View):
 
                     book_type = soup.find("a", class_="book__category d-sm-block d-none").text.strip()
 
-                except:
+                else:
                     book_author = ""
                     book_type = ""
 
