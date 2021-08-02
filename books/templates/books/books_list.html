@@ -13,7 +13,7 @@
 
     <header>
 
-        <nav class="navbar p-4 pb-1 mx-lg-2 mx-1">
+        <nav class="navbar p-4 pb-1 mx-lg-2 mx-1 d-block">
 
             <div class="container-fluid">
 
@@ -46,20 +46,30 @@
 
                 <div class="container-fluid">
 
-                    <a class="btn btn-primary m-2" data-bs-toggle="collapse" href="#collapse_create" role="button" aria-expanded="false" aria-controls="collapse_create">
-                        Dodaj książkę
-                        <i class="bi bi-caret-down-fill"></i>
-                    </a>
+                    <div class="row my-2">
 
-                    <a class="btn btn-primary m-2" data-bs-toggle="collapse" href="#collapse_search" role="button" aria-expanded="false" aria-controls="collapse_search">
-                        Szukaj
-                        <i class="bi bi-caret-down-fill"></i>
-                    </a>
+                        <a class="btn btn-primary mx-md-2 col-md-2 m-2 col-5 mx-auto" data-bs-toggle="collapse" href="#collapse_create" role="button" aria-expanded="false" aria-controls="collapse_create">
+                            Dodaj książkę
+                            <i class="bi bi-caret-down-fill"></i>
+                        </a>
 
-                    <a href="{% static 'data/books_data.xlsx' %}" class="btn btn-primary m-2" download>
-                        pobierz
-                        <i class="bi bi-download"></i>
-                    </a>
+                        <a class="btn btn-primary mx-md-2 col-md-2 m-2 col-5 mx-auto" data-bs-toggle="collapse" href="#collapse_search" role="button" aria-expanded="false" aria-controls="collapse_search">
+                            Szukaj
+                            <i class="bi bi-caret-down-fill"></i>
+                        </a>
+
+                        <a href="{% static 'data/books_data.xlsx' %}" class="btn btn-primary mx-md-2 col-md-2 col-12 m-2 mx-auto" download>
+                            pobierz
+                            <i class="bi bi-download"></i>
+                        </a>
+
+                        <form method="POST" class="input-group mx-md-2 m-2 col mx-auto">
+                            {% csrf_token %}
+                            <input type="file" class="form-control" id="inputGroupFile02">
+                            <input type="submit" name="upload" class="input-group-text" for="inputGroupFile02" disabled value="Załaduj">
+                        <form>
+
+                    </div>
 
                 </div>
 
