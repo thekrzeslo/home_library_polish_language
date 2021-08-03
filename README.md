@@ -1,9 +1,20 @@
-# Domowa biblioteka
+# Home library
 
-Jest to projekt biblioteki domowej stworzony za pomocą Django, HTMLa i Bootstrapa w wersji 5.
+## General info
 
-Aplikacja posiada mechanizm automatycznego uzupełnienia tytułu o takie informacje jak autor, opis, oraz gatunek po wpisaniu tytułu oraz wybraniu odpowiedniej opcji.
+This is a project created with Django, HTML, and Bootstrap 5.
+This project is in Polish.
 
-Dodatkowo aplikacja posiada możliwość wygenerowania dokumentu excel ze wszystkimi danymi.
+* The application has a mechanism to autofill after adding a title (books will be automatically completed only in Polish).
 
-Jest jeszcze wiele rzeczy które można by było poprawić i ulepszyć ale aplikacja w pełni spełnia swoje zadanie.
+* You can generate and download an excel file with all your books in the app.
+
+* You can upload the Excel file and load the data (the Excel file must be in the same format you download).
+
+## Setup
+
+1. Create a new folder and place your downloads there.
+
+2. Run requirements.txt - `pip install -r requirements.txt`
+
+3. Run the Application - `python manage.py runserver`

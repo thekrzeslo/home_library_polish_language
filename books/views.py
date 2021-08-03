@@ -57,21 +57,15 @@ def save_as_lxml(queryset):
     sheet["C1"] = "Opis"
     sheet["D1"] = "Gatunek"
 
-    sheet_title_num = 2
-    sheet_author_num = 2
-    sheet_description_num = 2
-    sheet_type_num = 2
+    sheet_num = 2
 
     for i in queryset:
 
-        sheet["A" + str(sheet_title_num)] = i.title
-        sheet["B" + str(sheet_author_num)] = i.author
-        sheet["C" + str(sheet_description_num)] = i.description
-        sheet["D" + str(sheet_type_num)] = i.type
-        sheet_title_num += 1
-        sheet_author_num += 1
-        sheet_description_num += 1
-        sheet_type_num += 1
+        sheet["A" + str(sheet_num)] = i.title
+        sheet["B" + str(sheet_num)] = i.author
+        sheet["C" + str(sheet_num)] = i.description
+        sheet["D" + str(sheet_num)] = i.type
+        sheet_num += 1
 
     workbook.save("static/data/books_data.xlsx")
 
@@ -182,9 +176,7 @@ class BookListView(View):
                     soup = BeautifulSoup(html_text, 'html.parser')
 
                     book_name = soup.find("h1", class_="book__title js-book-title-scale").text.strip()
-
                     book_author = soup.find("a", class_="link-name").text
-
                     book_type = soup.find("a", class_="book__category d-sm-block d-none").text.strip()
 
                 else:
@@ -192,7 +184,6 @@ class BookListView(View):
                     book_type = ""
 
                 description = google_search(book_name + " opis książki")
-
 
                 self.title_value = book_name
                 self.author_value = book_author
@@ -218,6 +209,34 @@ class BookListView(View):
             self.collapse_switch = "collapse show"
 
             self.queryset = Books.objects.filter(**filtr)
+
+        elif request.POST.get("upload"):
+
+            if "file" in request.FILES:
+                file = request.FILES["file"]
+
+                workbook = openpyxl.load_workbook(file)
+                sheet = workbook.active
+
+                sheet_num = 2
+
+                while sheet["A"+str(sheet_num)].value:
+                    book = Books(
+                        user = request.user,
+                        title = sheet["A"+str(sheet_num)].value,
+                        author = sheet["B"+str(sheet_num)].value,
+                        description = sheet["C"+str(sheet_num)].value,
+                        type = sheet["D"+str(sheet_num)].value,
+                    )
+                    book.save()
+                    sheet_num += 1
+
+
+            filtr = {"user":request.user}
+
+            self.queryset = Books.objects.filter(**filtr)
+
+            save_as_lxml(self.queryset)
 
         books_counter = len(self.queryset)
 
