@@ -117,64 +117,42 @@ class BookListView(View):
             if form.is_valid():
                 form.instance.user = request.user
                 form.save()
-                self.queryset = Books.objects.filter(**filtr)
 
-            save_as_lxml(self.queryset)
 
         elif request.POST.get("update"):
             filtr = {"user":request.user}
-
             id = request.POST.get("update")
-
             obj = get_object_or_404(Books, id=id)
-
             form = BooksForm(request.POST, instance=obj)
 
             if form.is_valid():
                 form.instance.user = request.user
                 form.save()
-                self.queryset = Books.objects.filter(**filtr)
-
-            save_as_lxml(self.queryset)
 
 
         elif request.POST.get("delete"):
             filtr = {"user":request.user}
-
             id  = request.POST.get("delete")
-
             obj = get_object_or_404(Books, id=id)
 
             if obj:
                 obj.delete()
-                self.queryset = Books.objects.filter(**filtr)
-
-            save_as_lxml(self.queryset)
 
         elif request.POST.get("autofill"):
             book_name = request.POST["title"]
 
             if book_name:
                 url = "https://lubimyczytac.pl/szukaj/ksiazki?phrase=" + book_name
-
                 html_text = requests.get(url).text
-
                 soup = BeautifulSoup(html_text, 'html.parser')
-
                 book = soup.find("div", class_="authorAllBooks__single")
 
                 if book:
-
                     a = book.find("a", class_="authorAllBooks__singleTextTitle float-left")
-
                     link = a["href"]
-
                     url = "https://lubimyczytac.pl" + link
-
                     html_text = requests.get(url).text
-
                     soup = BeautifulSoup(html_text, 'html.parser')
-
                     book_name = soup.find("h1", class_="book__title js-book-title-scale").text.strip()
                     book_author = soup.find("a", class_="link-name").text
                     book_type = soup.find("a", class_="book__category d-sm-block d-none").text.strip()
@@ -190,11 +168,7 @@ class BookListView(View):
                 self.description_value = description
                 self.type_value = book_type
 
-            filtr = {"user" : request.user}
-
             self.collapse_switch = "collapse show"
-
-            self.queryset = Books.objects.filter(**filtr)
 
         elif request.POST.get("reset"):
             book_name = request.POST["title"]
@@ -204,11 +178,7 @@ class BookListView(View):
             self.description_value = ""
             self.type_value = ""
 
-            filtr = {"user":request.user}
-
             self.collapse_switch = "collapse show"
-
-            self.queryset = Books.objects.filter(**filtr)
 
         elif request.POST.get("upload"):
 
@@ -218,26 +188,22 @@ class BookListView(View):
                 workbook = openpyxl.load_workbook(file)
                 sheet = workbook.active
 
-                sheet_num = 2
+                if sheet["A1"].value == "Tytuł" and sheet["B1"].value == "Autor" and sheet["C1"].value == "Opis" and sheet["D1"].value == "Gatunek":
+                    sheet_num = 2
 
-                while sheet["A"+str(sheet_num)].value:
-                    book = Books(
-                        user = request.user,
-                        title = sheet["A"+str(sheet_num)].value,
-                        author = sheet["B"+str(sheet_num)].value,
-                        description = sheet["C"+str(sheet_num)].value,
-                        type = sheet["D"+str(sheet_num)].value,
-                    )
-                    book.save()
-                    sheet_num += 1
+                    while sheet["A"+str(sheet_num)].value:
+                        book = Books(
+                            user = request.user,
+                            title = sheet["A"+str(sheet_num)].value,
+                            author = sheet["B"+str(sheet_num)].value,
+                            description = sheet["C"+str(sheet_num)].value,
+                            type = sheet["D"+str(sheet_num)].value,
+                        )
+                        book.save()
+                        sheet_num += 1
 
-
-            filtr = {"user":request.user}
-
-            self.queryset = Books.objects.filter(**filtr)
-
-            save_as_lxml(self.queryset)
-
+        self.queryset = Books.objects.filter(**filtr)
+        save_as_lxml(self.queryset)
         books_counter = len(self.queryset)
 
         content = {
